@@ -18,7 +18,7 @@ void freePriorityQueue(PriorityQueue* pQ);
 
 // Access Functions
 int getNumElements(PriorityQueue Q);
-int getMin(PriorityQueue Q, int u);
+int getMin(PriorityQueue Q);
 int inQueue(PriorityQueue Q, int u);
 
 // Manipulation Procedures

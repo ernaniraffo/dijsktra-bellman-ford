@@ -13,7 +13,6 @@ typedef struct PriorityQueueObj {
     int* I;
     double* key;
     int heapSize;
-    int length;
 } PriorityQueueObj;
 
 // Helper functions
@@ -38,7 +37,7 @@ void swap(int* myArray, int i, int j) {
     return;
 }
 
-void heapify(PriorityQueue Q, i) {
+void heapify(PriorityQueue Q, int i) {
 
     int l = left(i);
     int r = right(i);
@@ -76,16 +75,16 @@ PriorityQueue newPriorityQueue(int n, double* key) {
     
     Q->A = (int*) calloc(n, sizeof(int));
     for (int i = 1; i <= n; i++) {
-        A[i] = i;
+        Q->A[i] = i;
     }
+    buildHeap(Q);
 
     Q->I = (int*) calloc(n, sizeof(int));
     for (int i = 1; i <= n; i++) {
-        I[i] = i;
+        Q->I[Q->A[i]] = i;
     }
 
     Q->key = key;
-    Q->length = n;
     Q->heapSize = n;
     return Q;
 }

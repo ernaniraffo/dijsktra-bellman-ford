@@ -43,12 +43,12 @@ void heapify(PriorityQueue Q, int i) {
     int r = right(i);
     int smallest;
 
-    if (l <= Q->heapSize && Q->key[Q->A[l]] < Q->key[Q->A[i]]) {
+    if (l <= Q->heapSize && Q->key[Q->A[l]] <= Q->key[Q->A[i]]) {
         smallest = l;
     } else {
         smallest = i;
     }
-    if (r <= Q->heapSize && Q->key[Q->A[r]] < Q->key[Q->A[smallest]]) {
+    if (r <= Q->heapSize && Q->key[Q->A[r]] <= Q->key[Q->A[smallest]]) {
         smallest = r;
     }
 

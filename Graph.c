@@ -1,0 +1,175 @@
+// -----------------------------------
+// Ernani Raffo
+// Graph.c
+// Implementation file for Graph ADT
+// -----------------------------------
+
+#include <stdlib.h>
+#include "List.h"
+#include "Graph.h"
+#include "PriorityQueue.h"
+
+// Private GraphObj type
+typedef struct GraphObj {
+    int* parent;
+    double* distance;
+    double** weight;
+    List* adj;
+    int order;
+    int size;
+    int source;
+} GraphObj;
+
+// Constructors and Destructors
+
+// newGraph()
+// Creates and returns new Graph object
+Graph newGraph(int n) {
+    
+    Graph G = malloc(sizeof(Graph));
+    G->parent = calloc(n + 1, sizeof(int));
+    G->distance = calloc(n + 1, sizeof(double));
+    G->weight = calloc(n + 1, sizeof(double*));
+    G->adj = calloc(n + 1, sizeof(List));
+    
+    for (int i = 1; i <= n; i += 1) {
+        G->parent[i] = NIL;
+        G->distance[i] = INF;
+        G->adj[i] = newList();
+
+        for (int j = 1; j <= n; j += 1) {
+            G->weight[i][j] = INF;
+        }
+    }
+
+    G->order = n;
+    G->size = 0;
+    G->source = NIL;
+    
+    return G;
+}
+
+// freeGraph()
+// Frees heap memory pointed to *pG
+void freeGraph(Graph* pG) {
+    if (pG != NULL && *pG != NULL) {
+
+        for (int i = 1; i <= getOrder(*pG); i += 1) {
+            freeList(&(*pG)->adj[i]);
+        }
+
+        free((*pG)->weight);
+        free((*pG)->parent);
+        free((*pG)->distance);
+        free(*pG);
+        *pG = NULL;
+    }
+    return;
+}
+
+// Access Functions
+
+// getOrder()
+// Returns the order of G
+int getOrder(Graph G) {
+    if (G == NULL) {
+        printf("Graph error: calling getOrder() on NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    return G->order;
+}
+
+// getParent()
+// Returns the parent of u
+int getParent(Graph G, int u) {
+    if (G == NULL) {
+        printf("Graph error: calling getParent() on NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    return G->parent[u];
+}
+
+// getDistance()
+// Returns the distance from the source vertex to u
+double getDistance(Graph G, int u) {
+    if (G == NULL) {
+        printf("Graph error: calling getDistance() on NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    return G->distance[u];
+}
+
+// getSource()
+// Returns the source vertex of Graph G
+int getSource(Graph G) {
+    if (G == NULL) {
+        printf("Graph error: calling getSource() on NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    return G->source;
+}
+
+// getPath()
+// Returns the path from the source to vertex to u
+// Pre: isEmpty(P), getSource(G) == s
+void getPath(Graph G, int s, int u, List P) {
+    if (G == NULL) {
+        printf("Graph error: calling getPath() on NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    if (length(P) != 0) {
+        printf("Graph error: calling getPath() with non-empty List\n");
+        exit(EXIT_FAILURE);
+    }
+    if (getSource(G) != s) {
+        printf("Graph error: calling getPath() with wrong source vertex\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (getDistance(G, u) != INF) {
+        if (u == G->source) {
+            append(P, u);
+        } else {
+            getPath(G, s, G->parent[u], P);
+            append(P, u);
+        }
+        return;
+    }
+    append(P, NIL);
+    return;
+}
+
+// Manipulation Procedures
+
+// addDirectedEdge
+// Adds v to the adjacency list of u, and sets the
+// u'th row, v'th column of the weight array w
+void addDirectedEdge(Graph G, int u, int v, double w) {
+    if (G == NULL) {
+        printf("Graph error: calling addDirectedEdge() on a NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+
+    List L = G->adj[u];
+
+    if (length(L) > 0) {
+        moveFront(L);
+    }
+
+    while (1) {
+        if (index(L) < 0) { // higher than any number in List (if any)
+            append(L, v);
+            return;
+        } else if (v <= get(L)) { // can not go higher in list
+            insertBefore(L, v);
+            return;
+        } else if (v > get(L)) { // can go higher in list
+            moveNext(L);
+        }
+    }
+
+    G->weight[u][v] = w;
+    G->size += 1;
+
+    return;
+}

@@ -33,13 +33,13 @@ Graph newGraph(int n) {
     G->adj = calloc(n + 1, sizeof(List));
     
     for (int i = 1; i <= n; i += 1) {
-        G->parent[i] = NIL;
-        G->distance[i] = INF;
+
         G->adj[i] = newList();
 
         for (int j = 1; j <= n; j += 1) {
             G->weight[i][j] = INF;
         }
+
     }
 
     G->order = n;
@@ -172,4 +172,83 @@ void addDirectedEdge(Graph G, int u, int v, double w) {
     G->size += 1;
 
     return;
+}
+
+void Initialize(Graph G, int s) {
+    for (int x = 1; x <= getOrder(G); x += 1) {
+        G->distance[x] = INF;
+        G->parent[x] = NIL;
+    }
+    G->distance[s] = 0;
+    return;
+}
+
+// Relax1()
+// Relaxes edges in a weighted graph.
+// Used by Dijkstra()
+void Relax1(Graph G, int u, int v, PriorityQueue Q) {
+    if (G->distance[v] > G->distance[u] + G->weight[u][v]) {
+        decreaseKey(Q, v, G->distance[u] + G->weight[u][v]);
+        G->parent[v] = u;
+    }
+    return;
+}
+
+// Relax2()
+// Relaxes edges in a weighted graph.
+// Used by BellmanFord()
+void Relax2(Graph G, int u, int v) {
+    if (G->distance[v] > G->distance[u] + G->weight[u][v]) {
+        G->distance[v] = G->distance[u] + G->weight[u][v];
+        G->parent[v] = u;
+    }
+    return;
+}
+
+// Dijkstra()
+// Peforms Dijsktra's algorithm with source s
+void Dijkstra(Graph G, int s) {
+    
+    Initialize(G, s);
+    PriorityQueue Q = newPriorityQueue(G->size, G->distance);
+
+    while (getNumElements(Q) != 0) {
+        int u = getMin(Q);
+        for (moveFront(G->adj[u]); index(G->adj[u]); moveNext(G->adj[u])) {
+            int v = get(G->adj[u]);
+            Relax1(G, u, v, Q);
+        }
+    }
+    
+    return;
+}
+
+// BellmanFord()
+// Performs Bellman-Ford's algorithm with a source s
+int BellmanFord(Graph G, int s) {
+    
+    Initialize(G, s); // O(n)
+    int n = getOrder(G);
+    
+    for (int i = 1; i <= (n - 1); i += 1) {
+        for (int x = 1; x <= n; x += 1) {
+            for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
+                Relax2(G, x, get(G->adj[x]));
+            }
+        }
+    }
+
+    for (int x = 1; x <= n; x += 1) {
+        for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
+            
+            int y = get(G->adj[x]);
+
+            if (G->distance[y] > G->distance[x] + G->weight[x][y]) {
+                return false;
+            }
+
+        }
+    }
+
+    return true;
 }

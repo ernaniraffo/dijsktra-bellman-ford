@@ -16,7 +16,6 @@ typedef struct GraphObj {
     double** weight;
     List* adj;
     int order;
-    int size;
     int source;
 } GraphObj;
 
@@ -43,7 +42,6 @@ Graph newGraph(int n) {
     }
 
     G->order = n;
-    G->size = 0;
     G->source = NIL;
     
     return G;
@@ -169,7 +167,6 @@ void addDirectedEdge(Graph G, int u, int v, double w) {
     }
 
     G->weight[u][v] = w;
-    G->size += 1;
 
     return;
 }
@@ -210,7 +207,7 @@ void Relax2(Graph G, int u, int v) {
 void Dijkstra(Graph G, int s) {
     
     Initialize(G, s);
-    PriorityQueue Q = newPriorityQueue(G->size, G->distance);
+    PriorityQueue Q = newPriorityQueue(G->order, G->distance);
 
     while (getNumElements(Q) != 0) {
         int u = getMin(Q);

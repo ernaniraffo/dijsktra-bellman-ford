@@ -205,6 +205,14 @@ void Relax2(Graph G, int u, int v) {
 // Dijkstra()
 // Peforms Dijsktra's algorithm with source s
 void Dijkstra(Graph G, int s) {
+    if (G == NULL) {
+        fprintf(stderr, "Graph error: calling Dijkstra() on a NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    if (s < 1 || s > getOrder(G)) {
+        fprintf(stderr, "Graph error: calling Dijkstra() with an out of range source vertex\n");
+        exit(EXIT_FAILURE);
+    }
     
     Initialize(G, s);
     PriorityQueue Q = newPriorityQueue(G->order, G->distance);
@@ -223,10 +231,18 @@ void Dijkstra(Graph G, int s) {
 // BellmanFord()
 // Performs Bellman-Ford's algorithm with a source s
 int BellmanFord(Graph G, int s) {
-    
-    Initialize(G, s); // O(n)
+    if (G == NULL) {
+        fprintf(stderr, "Graph error: calling BellmanFord() on a NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+    if (s < 1 || s > getOrder(G)) {
+        fprintf(stderr, "Graph error: calling BellmanFord() with an out of range source vertex\n");
+        exit(EXIT_FAILURE);
+    }
+
+    Initialize(G, s);
     int n = getOrder(G);
-    
+
     for (int i = 1; i <= (n - 1); i += 1) {
         for (int x = 1; x <= n; x += 1) {
             for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
@@ -237,13 +253,10 @@ int BellmanFord(Graph G, int s) {
 
     for (int x = 1; x <= n; x += 1) {
         for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
-            
             int y = get(G->adj[x]);
-
             if (G->distance[y] > G->distance[x] + G->weight[x][y]) {
                 return false;
             }
-
         }
     }
 

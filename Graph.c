@@ -184,10 +184,17 @@ void Initialize(Graph G, int s) {
 // Relaxes edges in a weighted graph.
 // Used by Dijkstra()
 void Relax1(Graph G, int u, int v, PriorityQueue Q) {
-    if (G->distance[v] > G->distance[u] + G->weight[u][v]) {
-        decreaseKey(Q, v, G->distance[u] + G->weight[u][v]);
+    
+    int distanceU = G->distance[u];
+    int weightUV = G->weight[u][v];
+
+    int total = (distanceU == INF) || (weightUV == INF) ? INF : distanceU + weightUV;
+
+    if (G->distance[v] > total) {
+        decreaseKey(Q, v, total);
         G->parent[v] = u;
     }
+
     return;
 }
 
@@ -195,10 +202,17 @@ void Relax1(Graph G, int u, int v, PriorityQueue Q) {
 // Relaxes edges in a weighted graph.
 // Used by BellmanFord()
 void Relax2(Graph G, int u, int v) {
-    if (G->distance[v] > G->distance[u] + G->weight[u][v]) {
-        G->distance[v] = G->distance[u] + G->weight[u][v];
+
+    int distanceU = G->distance[u];
+    int weightUV = G->weight[u][v];
+
+    int total = (distanceU == INF) || (weightUV == INF) ? INF : distanceU + weightUV;
+
+    if (G->distance[v] > total) {
+        G->distance[v] = total;
         G->parent[v] = u;
     }
+
     return;
 }
 
@@ -254,11 +268,60 @@ int BellmanFord(Graph G, int s) {
     for (int x = 1; x <= n; x += 1) {
         for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
             int y = get(G->adj[x]);
+            printf("BellmanFord(): G->distance[y]: %.0lf\n", G->distance[y]);
+            printf("BellmanFord(): G->distance[x] + G->weight[x][y]: %.0lf\n", G->distance[x] + G->weight[x][y]);
             if (G->distance[y] > G->distance[x] + G->weight[x][y]) {
+                printf("Negative cycle detected\n");
                 return false;
             }
         }
     }
 
     return true;
+}
+
+
+// Other functions
+
+// copyGraph()
+// Returns a copy of Graph G.
+Graph copyGraph(Graph G) {
+    if (G == NULL) {
+        fprintf(stderr, "Graph error: calling copyGraph() on a NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+
+    Graph C = newGraph(G->order);
+    
+    for (int i = 1; i <= getOrder(C); i += 1) {
+        C->parent[i] = NIL;
+        C->distance[i] = INF;
+
+        for (moveFront(G->adj[i]); index(G->adj[i]); moveNext(G->adj[i])) {
+            int v = get(G->adj[i]);
+            addDirectedEdge(C, i, v, G->weight[i][v]);
+        }
+
+    }
+
+    return C;
+}
+
+// printGraph()
+// Prints the ajacency list representation of Graph G
+void printGraph(FILE* out, Graph G) {
+    if (G == NULL) {
+        fprintf(stderr, "Graph error: calling printGraph() on a NULL Graph reference\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 1; i <= getOrder(G); i += 1) {
+        fprintf(out, "%d: ", i);
+        for (moveFront(G->adj[i]); index(G->adj[i]); moveNext(G->adj[i])) {
+            fprintf(out, "(%d, %.1lf) ", i, G->weight[i][get(G->adj[i])]);
+        }
+        printf("\n");
+    }
+
+    return;
 }

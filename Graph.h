@@ -9,7 +9,7 @@
 #include "List.h"
 
 #define NIL 0
-#define INF 100000000
+#define INF 100000001
 
 // Exported Graph type
 typedef struct GraphObj* Graph;

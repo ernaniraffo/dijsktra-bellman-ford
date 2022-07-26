@@ -16,6 +16,7 @@ typedef struct PriorityQueueObj {
 } PriorityQueueObj;
 
 // Helper functions
+
 int parent(int i) {
     return i / 2;
 }
@@ -43,17 +44,19 @@ void heapify(PriorityQueue Q, int i) {
     int r = right(i);
     int smallest;
 
-    if (l <= Q->heapSize && Q->key[Q->A[l]] <= Q->key[Q->A[i]]) {
+    if (l <= Q->heapSize && Q->key[Q->A[l]] < Q->key[Q->A[i]]) {
         smallest = l;
     } else {
         smallest = i;
     }
-    if (r <= Q->heapSize && Q->key[Q->A[r]] <= Q->key[Q->A[smallest]]) {
+    if (r <= Q->heapSize && Q->key[Q->A[r]] < Q->key[Q->A[smallest]]) {
         smallest = r;
     }
 
+
     if (smallest != i) {
         swap(Q->A, i, smallest);
+        swap(Q->I, Q->A[i], Q->A[smallest]);
         heapify(Q, smallest);
     }
     
@@ -125,9 +128,8 @@ void deleteMin(PriorityQueue Q) {
         exit(EXIT_FAILURE);
     }
 
-    int min = Q->A[1];
-
-    Q->A[1] = Q->A[Q->heapSize];
+    swap(Q->A, 1, Q->heapSize);
+    swap(Q->I, Q->A[1], Q->A[Q->heapSize]);
     Q->heapSize -= 1;
     heapify(Q, 1);
 
@@ -142,5 +144,19 @@ void decreaseKey(PriorityQueue Q, int u, double k) {
     if (k < Q->key[u]) {
         Q->key[u] = k;
     }
+    return;
+}
+
+void printPriorityQueue(FILE* out, PriorityQueue Q) {
+    if (Q == NULL) {
+        fprintf(stderr, "Error: PriorityQueue: printPriorityQueue(): NULL Queue");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 1; i <= getNumElements(Q); i += 1) {
+        fprintf(out, "%d ", Q->A[i]);
+    }
+    fprintf(out, "\n");
+
     return;
 }

@@ -5,6 +5,7 @@
 // -----------------------------------
 
 #include <stdlib.h>
+#include <assert.h>
 #include "List.h"
 #include "Graph.h"
 #include "PriorityQueue.h"
@@ -25,7 +26,8 @@ typedef struct GraphObj {
 // Creates and returns new Graph object
 Graph newGraph(int n) {
     
-    Graph G = malloc(sizeof(Graph));
+    Graph G = malloc(sizeof(GraphObj));
+    assert(G != NULL);
     G->parent = calloc(n + 1, sizeof(int));
     G->distance = calloc(n + 1, sizeof(double));
     G->weight = calloc(n + 1, sizeof(double*));
@@ -34,6 +36,8 @@ Graph newGraph(int n) {
     for (int i = 1; i <= n; i += 1) {
 
         G->adj[i] = newList();
+
+        G->weight[i] = calloc(n + 1, sizeof(double));
 
         for (int j = 1; j <= n; j += 1) {
             G->weight[i][j] = INF;
@@ -54,11 +58,13 @@ void freeGraph(Graph* pG) {
 
         for (int i = 1; i <= getOrder(*pG); i += 1) {
             freeList(&(*pG)->adj[i]);
+            free((*pG)->weight[i]);
         }
 
         free((*pG)->weight);
         free((*pG)->parent);
         free((*pG)->distance);
+        free((*pG)->adj);
         free(*pG);
         *pG = NULL;
     }
@@ -157,10 +163,10 @@ void addDirectedEdge(Graph G, int u, int v, double w) {
     while (1) {
         if (index(L) < 0) { // higher than any number in List (if any)
             append(L, v);
-            return;
+            break;
         } else if (v <= get(L)) { // can not go higher in list
             insertBefore(L, v);
-            return;
+            break;
         } else if (v > get(L)) { // can go higher in list
             moveNext(L);
         }
@@ -177,6 +183,7 @@ void Initialize(Graph G, int s) {
         G->parent[x] = NIL;
     }
     G->distance[s] = 0;
+    G->source = s;
     return;
 }
 
@@ -233,12 +240,16 @@ void Dijkstra(Graph G, int s) {
 
     while (getNumElements(Q) != 0) {
         int u = getMin(Q);
-        for (moveFront(G->adj[u]); index(G->adj[u]); moveNext(G->adj[u])) {
+        deleteMin(Q); // pop
+        for (moveFront(G->adj[u]); index(G->adj[u]) >= 0; moveNext(G->adj[u])) {
             int v = get(G->adj[u]);
-            Relax1(G, u, v, Q);
+            if (inQueue(Q, v)) {
+                Relax1(G, u, v, Q);
+            }
         }
     }
     
+    freePriorityQueue(&Q);
     return;
 }
 
@@ -268,10 +279,7 @@ int BellmanFord(Graph G, int s) {
     for (int x = 1; x <= n; x += 1) {
         for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
             int y = get(G->adj[x]);
-            printf("BellmanFord(): G->distance[y]: %.0lf\n", G->distance[y]);
-            printf("BellmanFord(): G->distance[x] + G->weight[x][y]: %.0lf\n", G->distance[x] + G->weight[x][y]);
             if (G->distance[y] > G->distance[x] + G->weight[x][y]) {
-                printf("Negative cycle detected\n");
                 return false;
             }
         }
@@ -297,7 +305,7 @@ Graph copyGraph(Graph G) {
         C->parent[i] = NIL;
         C->distance[i] = INF;
 
-        for (moveFront(G->adj[i]); index(G->adj[i]); moveNext(G->adj[i])) {
+        for (moveFront(G->adj[i]); index(G->adj[i]) >= 0; moveNext(G->adj[i])) {
             int v = get(G->adj[i]);
             addDirectedEdge(C, i, v, G->weight[i][v]);
         }
@@ -317,8 +325,8 @@ void printGraph(FILE* out, Graph G) {
 
     for (int i = 1; i <= getOrder(G); i += 1) {
         fprintf(out, "%d: ", i);
-        for (moveFront(G->adj[i]); index(G->adj[i]); moveNext(G->adj[i])) {
-            fprintf(out, "(%d, %.1lf) ", i, G->weight[i][get(G->adj[i])]);
+        for (moveFront(G->adj[i]); index(G->adj[i]) >= 0; moveNext(G->adj[i])) {
+            fprintf(out, "(%d, %.1lf) ", get(G->adj[i]), G->weight[i][get(G->adj[i])]);
         }
         printf("\n");
     }

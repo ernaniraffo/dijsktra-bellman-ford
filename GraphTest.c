@@ -86,7 +86,6 @@ int main(int argc, char** argv) {
     BellmanFord(C, 1);
     printf("\n");
 
-    P = newList(); // path
     for (int i = 1; i <= getOrder(C); i += 1) {
         printf("distance[%d]: %.0f\n", i, getDistance(C, i));
         getPath(C, getSource(C), i, P);

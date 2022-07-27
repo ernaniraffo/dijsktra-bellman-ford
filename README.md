@@ -5,4 +5,5 @@ Solves Single Source Shortest Paths problem using Dijkstra's and Bellman-Ford's 
 - [x] Finish Graph ADT
 - [x] Test ADTs
 - [x] Makefile
-- [ ] Write main program
+- [x] Write main program
+- [ ] Test more complicated graphs

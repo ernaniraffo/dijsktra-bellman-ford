@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     Graph G = newGraph(n);
 
     while (fscanf(in, "%d %d %d", &u, &v, &w) != EOF) {
-        if (u == 0 & v == 0 & w == 0) {
+        if (u == 0 && v == 0 && w == 0) {
             break;
         }
         if (w < 0 && !negativeEdgeWeight) {
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     List P = newList(); // path
 
     while (fscanf(in, "%d %d", &s, &u) != EOF) {
-        if (s == 0 & u == 0) {
+        if (s == 0 && u == 0) {
             break;
         }
         if (negativeEdgeWeight) {

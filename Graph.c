@@ -10,6 +10,13 @@
 #include "Graph.h"
 #include "PriorityQueue.h"
 
+void printDistances(Graph G, int s) {
+    for (int i = 1; i <= getOrder(G); i += 1) {
+        printf("distance[%d]: %.1lf\n", i, getDistance(G, i));
+    }
+    return;
+}
+
 // Private GraphObj type
 typedef struct GraphObj {
     int* parent;
@@ -239,14 +246,30 @@ void Dijkstra(Graph G, int s) {
     PriorityQueue Q = newPriorityQueue(G->order, G->distance);
 
     while (getNumElements(Q) != 0) {
+        printf("Q: ");
+        printPriorityQueue(stdout, Q);
+
         int u = getMin(Q);
-        deleteMin(Q); // pop
+        printf("Min = %d\n", u);
+
         for (moveFront(G->adj[u]); index(G->adj[u]) >= 0; moveNext(G->adj[u])) {
+            printf("In G->adj[%d]...\n", u);
             int v = get(G->adj[u]);
+            printf("Attempting to relax to %d...\n", v);
             if (inQueue(Q, v)) {
+                printf("Relaxing %d to %d...\n", u, v);
                 Relax1(G, u, v, Q);
+                printf("\n");
+                printDistances(G, s);
+                printf("\n");
+            } else {
+                printf("%d is not in the queue, not relaxing\n", v);
             }
         }
+        printf("popping...\n");
+        deleteMin(Q); // pop
+        printf("Q: ");
+        printPriorityQueue(stdout, Q);
     }
     
     freePriorityQueue(&Q);
@@ -328,7 +351,7 @@ void printGraph(FILE* out, Graph G) {
         for (moveFront(G->adj[i]); index(G->adj[i]) >= 0; moveNext(G->adj[i])) {
             fprintf(out, "(%d, %.1lf) ", get(G->adj[i]), G->weight[i][get(G->adj[i])]);
         }
-        printf("\n");
+        fprintf(out, "\n");
     }
 
     return;

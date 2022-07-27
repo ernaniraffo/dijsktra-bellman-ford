@@ -4,13 +4,13 @@
 #  ------------------
 
 SOURCES        = $(wildcard *.c)
-OBJ 		   = $(SOURCES:%.c=%.o)
+OBJ            = $(SOURCES:%.c=%.o)
 OBJ_FIND_PATH  = FindPath.o Graph.o PriorityQueue.o List.o
 OBJ_GRAPH_TEST = GraphTest.o Graph.o PriorityQueue.o List.o
 OBJ_QUEUE_TEST = PriorityQueueTest.o PriorityQueue.o
 OBJ_LIST_TEST  = ListTest.o List.o
 
-CFLAGS 		   = -Wall
+CFLAGS         = -Wall
 COMPILE        = gcc -std=c17 $(CLFAGS) -c
 LINK           = gcc -std=c17 -Wall $(CFLAGS) -o
 
@@ -35,7 +35,7 @@ debug: CFLAGS += -g
 debug: clean FindPath
 	lldb ./FindPath in1 out1
 
-tidy: 
+tidy:
 	rm -f $(OBJ)
 
 clean: tidy

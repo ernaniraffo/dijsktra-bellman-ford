@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
         if (u == 0 & v == 0 & w == 0) {
             break;
         }
-        if (w < 0) {
+        if (w < 0 && !negativeEdgeWeight) {
             negativeEdgeWeight = true;
         }
         addDirectedEdge(G, u, v, w);
@@ -64,7 +64,6 @@ int main(int argc, char** argv) {
                     getPath(G, s, u, P);
                     fprintf(out, "A shortest path from %d to %d of length %.1lf is: ", s, u, d);
                     printList(out, P);
-                    fprintf(out, "\n");
                     clear(P);
                 } else {
                     fprintf(out, "No path from %d to %d exists\n", s, u);

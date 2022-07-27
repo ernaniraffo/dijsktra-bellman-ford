@@ -10,6 +10,10 @@
 #include "Graph.h"
 #include "PriorityQueue.h"
 
+// printDistances()
+// Prints each vertices distance from
+// source s.
+// Function used when debugging
 void printDistances(Graph G, int s) {
     for (int i = 1; i <= getOrder(G); i += 1) {
         printf("distance[%d]: %.1lf\n", i, getDistance(G, i));
@@ -217,10 +221,10 @@ void Relax1(Graph G, int u, int v, PriorityQueue Q) {
 // Used by BellmanFord()
 void Relax2(Graph G, int u, int v) {
 
-    int distanceU = G->distance[u];
-    int weightUV = G->weight[u][v];
+    double distanceU = G->distance[u];
+    double weightUV = G->weight[u][v];
 
-    int total = (distanceU == INF) || (weightUV == INF) ? INF : distanceU + weightUV;
+    double total = (distanceU == INF) || (weightUV == INF) ? INF : distanceU + weightUV;
 
     if (G->distance[v] > total) {
         G->distance[v] = total;
@@ -246,30 +250,15 @@ void Dijkstra(Graph G, int s) {
     PriorityQueue Q = newPriorityQueue(G->order, G->distance);
 
     while (getNumElements(Q) != 0) {
-        printf("Q: ");
-        printPriorityQueue(stdout, Q);
-
         int u = getMin(Q);
-        printf("Min = %d\n", u);
 
         for (moveFront(G->adj[u]); index(G->adj[u]) >= 0; moveNext(G->adj[u])) {
-            printf("In G->adj[%d]...\n", u);
             int v = get(G->adj[u]);
-            printf("Attempting to relax to %d...\n", v);
             if (inQueue(Q, v)) {
-                printf("Relaxing %d to %d...\n", u, v);
                 Relax1(G, u, v, Q);
-                printf("\n");
-                printDistances(G, s);
-                printf("\n");
-            } else {
-                printf("%d is not in the queue, not relaxing\n", v);
             }
         }
-        printf("popping...\n");
         deleteMin(Q); // pop
-        printf("Q: ");
-        printPriorityQueue(stdout, Q);
     }
     
     freePriorityQueue(&Q);
@@ -302,7 +291,13 @@ int BellmanFord(Graph G, int s) {
     for (int x = 1; x <= n; x += 1) {
         for (moveFront(G->adj[x]); index(G->adj[x]) >= 0; moveNext(G->adj[x])) {
             int y = get(G->adj[x]);
-            if (G->distance[y] > G->distance[x] + G->weight[x][y]) {
+
+            double distanceX = G->distance[x];
+            double weightXY = G->weight[x][y];
+
+            double total = (distanceX == INF) || (weightXY == INF) ? INF : distanceX + weightXY;
+            
+            if (G->distance[y] > total) {
                 return false;
             }
         }

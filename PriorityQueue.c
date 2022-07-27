@@ -40,10 +40,6 @@ void swap(int* myArray, int i, int j) {
 
 void heapify(PriorityQueue Q, int i) {
 
-    printf("-----------------------------------------------------\n");
-    printf("Heapifying from %d...\n", Q->A[i]);
-    printf("Key of %d: %.1lf\n", Q->A[i], Q->key[Q->A[i]]);
-
     int l = left(i);
     int r = right(i);
     int smallest;
@@ -57,26 +53,12 @@ void heapify(PriorityQueue Q, int i) {
         smallest = r;
     }
 
-    if (l <= Q->heapSize) {
-        printf("Key of left (%d): %.1lf\n", Q->A[l], Q->key[Q->A[l]]);
-    }
-
-    if (r <= Q->heapSize) {
-        printf("Key of right (%d): %.1lf\n", Q->A[r], Q->key[Q->A[r]]);
-    }
-
-    printf("Smallest = %d with key %.1lf\n", Q->A[smallest], Q->key[Q->A[smallest]]);
-    printf("#####################################################\n");
-
     if (smallest != i) {
         swap(Q->A, i, smallest);
         swap(Q->I, Q->A[i], Q->A[smallest]);
-        printf("Q: ");
-        printPriorityQueue(stdout, Q);
         heapify(Q, smallest);
     }
     
-    printf("returning -------------------------------------------\n");
     return;
 }
 
@@ -167,8 +149,6 @@ void decreaseKey(PriorityQueue Q, int u, double k) {
             i = parent(i);
         }
     }
-    printf("Queue after decreasing key...\n");
-    printPriorityQueue(stdout, Q);
     return;
 }
 

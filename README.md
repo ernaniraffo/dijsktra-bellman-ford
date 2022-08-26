@@ -1,5 +1,5 @@
 # Dijkstra-and-Bellman-Ford
-Solves Single Source Shortest Paths problem using Dijkstra's and Bellman-Ford's algorithms.
+Solves Single Source Shortest Paths problem using Dijkstra's and Bellman-Ford's algorithms. When a negative edge weight is detected by the ```FindPath``` program, it will use the Bellman-Ford algorithm instead of Dijkstra's.
 
 ## Building
 * ```make``` or ```make FindPath``` - builds ```FindPath``` executable.
